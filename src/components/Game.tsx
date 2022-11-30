@@ -15,13 +15,17 @@ import * as Messages from "../utils/Messages";
 
 function Game() {
   const [isTypingStarted, setIsTypingStarted] = useState<boolean>(false);
+  const [isGameFinished, _setIsGameFinished] = useState<boolean>(false);
   const [isNeedToResetTimer, setIsNeedToResetTImer] = useState<boolean>(false);
+  const [words, _setWords] = useState<string[]>([]);
+  const [typingIndex, _setTypingIndex] = useState<number>(0);
+  const [wordsValidation, _setWordsValidation] = useState<WordsValidate>({});
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const typingIndex = useRef<number>(0);
-  const wordsList = useRef<string[]>([]);
-  const wordsValidation = useRef<WordsValidate>({});
-  const isGameFinished = useRef<boolean>(false);
+  const typingIndexRef = useRef<number>(typingIndex);
+  const wordsRef = useRef<string[]>(words);
+  const wordsValidationRef = useRef<WordsValidate>(wordsValidation);
+  const isGameFinishedRef = useRef<boolean>(isGameFinished);
 
   useEffect(() => {
     setNewWordsList();
@@ -30,7 +34,7 @@ function Game() {
   }, []);
 
   const onKeyDown = (event: any): void => {
-    if (isGameFinished.current) return;
+    if (isGameFinishedRef.current) return;
     if (!isTypingStarted) {
       setIsTypingStarted(true);
       setIsNeedToResetTImer(false);
@@ -40,7 +44,7 @@ function Game() {
       // space pressed
       event.preventDefault();
       validateWord(inputRef.current.value);
-      typingIndex.current = typingIndex.current + 1;
+      setTypingIndexRef(typingIndexRef.current + 1);
       inputRef.current.value = "";
     } else if (
       event.keyCode === 8 &&
@@ -49,23 +53,45 @@ function Game() {
     ) {
       // backspace pressed
       event.preventDefault();
-      typingIndex.current = typingIndex.current - 1;
+      setTypingIndexRef(typingIndexRef.current - 1);
       inputRef.current.value =
-        wordsValidation.current[wordsList.current[typingIndex.current]].typed;
+        wordsValidationRef.current[
+          wordsRef.current[typingIndexRef.current]
+        ].typed;
     }
+  };
+
+  const setTypingIndexRef = (index: number) => {
+    typingIndexRef.current = index;
+    _setTypingIndex(index);
+  };
+
+  const setWordsRef = (allWords: string[]) => {
+    wordsRef.current = allWords;
+    _setWords(allWords);
+  };
+
+  const setWordValidationsRef = (validation: WordsValidate) => {
+    wordsValidationRef.current = validation;
+    _setWordsValidation(validation);
+  };
+
+  const setIsGameFinishedRef = (isFinish: boolean) => {
+    isGameFinishedRef.current = isFinish;
+    _setIsGameFinished(isFinish);
   };
 
   const initialProps = (): void => {
     setNewWordsList();
-    typingIndex.current = 0;
-    wordsValidation.current = {};
+    setTypingIndexRef(0);
+    setWordValidationsRef({});
     setIsTypingStarted(false);
-    isGameFinished.current = false;
+    setIsGameFinishedRef(false);
   };
 
   const setNewWordsList = (): void => {
     const randomWordsList: string[] = getRandomWordsList();
-    wordsList.current = randomWordsList;
+    setWordsRef(randomWordsList);
   };
 
   const resetInput = (): void => {
@@ -78,22 +104,22 @@ function Game() {
 
   const validateWord = (inputValue: string) => {
     const isWrong: boolean =
-      inputValue !== wordsList.current[typingIndex.current];
-    wordsValidation.current = {
-      ...wordsValidation.current,
-      [wordsList.current[typingIndex.current]]: {
-        original: wordsList.current[typingIndex.current],
+      inputValue !== wordsRef.current[typingIndexRef.current];
+    setWordValidationsRef({
+      ...wordsValidationRef.current,
+      [wordsRef.current[typingIndexRef.current]]: {
+        original: wordsRef.current[typingIndexRef.current],
         typed: inputValue,
         validate: isWrong ? WordStates.TYPED_WRONG : WordStates.TYPED_CORRECTLY,
       },
-    };
+    });
   };
 
   const finishGame = (): void => {
     if (inputRef.current !== null) {
       inputRef.current.disabled = true;
     }
-    isGameFinished.current = true;
+    setIsGameFinishedRef(true);
   };
 
   const resetGame = (): void => {
@@ -112,21 +138,15 @@ function Game() {
       />
       <TypingInput ref={inputRef} />
       <WordsContainer>
-        {isGameFinished.current ? (
-          <Results
-            wordsValidation={wordsValidation.current}
-            resetGame={resetGame}
-          />
+        {isGameFinished ? (
+          <Results wordsValidation={wordsValidation} resetGame={resetGame} />
         ) : (
-          wordsList.current.map((word: string, index: number) => (
+          words.map((word: string, index: number) => (
             <WordChip
               key={index}
-              className={`word-chip ${getWordState(
-                index,
-                typingIndex.current
-              )} ${
-                wordsValidation.current.hasOwnProperty(word)
-                  ? wordsValidation.current[word].validate
+              className={`word-chip ${getWordState(index, typingIndex)} ${
+                wordsValidation.hasOwnProperty(word)
+                  ? wordsValidation[word].validate
                   : ""
               }`}
             >
