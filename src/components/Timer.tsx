@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Container, Seconds } from "../styles/Timer";
 
-function Timer(props: { isTypingStarted: boolean }) {
-  const { isTypingStarted } = props;
+function Timer(props: { isTypingStarted: boolean; finishGame: any }) {
+  const { isTypingStarted, finishGame } = props;
 
   const [seconds, setSeconds] = useState(6);
   const [isActive, setIsActive] = useState(false);
@@ -20,11 +20,12 @@ function Timer(props: { isTypingStarted: boolean }) {
     if (seconds === 0) {
       setIsActive(false);
       setIsTimeIsUp(true);
+      finishGame();
       return;
     }
 
     isActive && setTimeout(() => setSeconds(seconds - 1), 1000);
-  }, [seconds, isActive, isTypingStarted]);
+  }, [seconds, isActive, isTypingStarted, finishGame]);
 
   return (
     <Container>

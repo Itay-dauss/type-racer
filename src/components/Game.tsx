@@ -7,11 +7,14 @@ import {
   TypingInput,
 } from "../styles/Game";
 import Timer from "./Timer";
+import Results from "./Results";
 import { getRandomWordsList, getWordState } from "../utils/LogicFunctions";
 import { WordStates } from "../utils/WordStates";
-import { WordsValidate } from "../types/VordsValidate";
+import { WordsValidate } from "../types/WordsValidate";
+
 function Game() {
   const [isTypingStarted, setIsTypingStarted] = useState<boolean>(false);
+  const [isGameFinished, setIsGameFinished] = useState<boolean>(false);
   const [words, _setWords] = useState<string[]>([]);
   const [typingIndex, _setTypingIndex] = useState<number>(0);
   const [wordsValidation, _setWordsValidation] = useState<WordsValidate>({});
@@ -41,6 +44,7 @@ function Game() {
     setWordValidationsRef({
       ...wordsValidationRef.current,
       [wordsRef.current[typingIndexRef.current]]: {
+        original: wordsRef.current[typingIndexRef.current],
         typed: inputValue,
         validate: isWrong ? WordStates.TYPED_WRONG : WordStates.TYPED_CORRECTLY,
       },
@@ -92,21 +96,28 @@ function Game() {
       <ExplainSection>
         As soon as you start typing the clock will start running
       </ExplainSection>
-      <Timer isTypingStarted={isTypingStarted} />
+      <Timer
+        isTypingStarted={isTypingStarted}
+        finishGame={() => setIsGameFinished(true)}
+      />
       <TypingInput ref={inputRef} />
       <WordsContainer>
-        {words.map((word: string, index: number) => (
-          <WordChip
-            key={index}
-            className={`word-chip ${getWordState(index, typingIndex)} ${
-              wordsValidation.hasOwnProperty(word)
-                ? wordsValidation[word].validate
-                : ""
-            }`}
-          >
-            {word}
-          </WordChip>
-        ))}
+        {isGameFinished ? (
+          <Results wordsValidation={wordsValidation} />
+        ) : (
+          words.map((word: string, index: number) => (
+            <WordChip
+              key={index}
+              className={`word-chip ${getWordState(index, typingIndex)} ${
+                wordsValidation.hasOwnProperty(word)
+                  ? wordsValidation[word].validate
+                  : ""
+              }`}
+            >
+              {word}
+            </WordChip>
+          ))
+        )}
       </WordsContainer>
     </Container>
   );

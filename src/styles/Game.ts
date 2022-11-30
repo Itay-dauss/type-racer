@@ -22,7 +22,7 @@ export const TypingInput = styled.input`
 `;
 
 export const WordsContainer = styled.div`
-  height: 25vh;
+  height: 42vh;
   width: 50vw;
   margin: auto;
   background: burlywood;
