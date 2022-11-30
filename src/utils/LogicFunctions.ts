@@ -10,8 +10,8 @@ export const getRandomWordsList = (): string[] => {
 };
 
 export const getWordState = (
-  wordIndex: Number,
-  typingIndex: Number
+  wordIndex: number,
+  typingIndex: number
 ): string => {
   if (wordIndex === typingIndex) return WordStates.CURRENTLY_TYPING;
   else if (wordIndex < typingIndex) return WordStates.TYPED;

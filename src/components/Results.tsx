@@ -7,14 +7,15 @@ import {
   MistakeDetails,
   PerfectScore,
   StarsEyesEmoji,
+  PlayAgainButton,
 } from "../styles/Results";
 import { WordResult } from "../types/WordResult";
 import { WordsValidate } from "../types/WordsValidate";
 import { WordStates } from "../utils/WordStates";
 import IMG from "../assets/star-eyes-emoji.png";
 
-function Results(props: { wordsValidation: WordsValidate }) {
-  const { wordsValidation } = props;
+function Results(props: { wordsValidation: WordsValidate; resetGame: any }) {
+  const { wordsValidation, resetGame } = props;
 
   const [amountOfWords, setAmountOfWords] = useState<number>(0);
   const [amountOfMistakes, setAmountOfMistakes] = useState<number>(0);
@@ -49,6 +50,7 @@ function Results(props: { wordsValidation: WordsValidate }) {
           </MistakesContainer>
         </React.Fragment>
       )}
+      <PlayAgainButton onClick={resetGame}>Play Again!</PlayAgainButton>
     </Container>
   );
 }

@@ -11,4 +11,4 @@ export const Container = styled.div`
   margin: auto;
 `;
 
-export const Seconds = styled.span``;
+export const Seconds = styled.h2``;

@@ -15,6 +15,7 @@ import { WordsValidate } from "../types/WordsValidate";
 function Game() {
   const [isTypingStarted, setIsTypingStarted] = useState<boolean>(false);
   const [isGameFinished, setIsGameFinished] = useState<boolean>(false);
+  const [isNeedToResetTimer, setIsNeedToResetTImer] = useState<boolean>(false);
   const [words, _setWords] = useState<string[]>([]);
   const [typingIndex, _setTypingIndex] = useState<number>(0);
   const [wordsValidation, _setWordsValidation] = useState<WordsValidate>({});
@@ -22,6 +23,15 @@ function Game() {
   const typingIndexRef = useRef<number>(typingIndex);
   const wordsRef = useRef<string[]>(words);
   const wordsValidationRef = useRef<WordsValidate>(wordsValidation);
+
+  const initialProps = () => {
+    const randomWordsList: string[] = getRandomWordsList();
+    setWordsRef(randomWordsList);
+    setTypingIndexRef(0);
+    setWordValidationsRef({});
+    setIsTypingStarted(false);
+    setIsGameFinished(false);
+  };
 
   const setTypingIndexRef = (index: number) => {
     typingIndexRef.current = index;
@@ -49,12 +59,13 @@ function Game() {
         validate: isWrong ? WordStates.TYPED_WRONG : WordStates.TYPED_CORRECTLY,
       },
     });
-
-    console.log(wordsValidationRef.current);
   };
 
   const onKeyDown = (event: any): void => {
-    if (!isTypingStarted) setIsTypingStarted(true);
+    if (!isTypingStarted) {
+      setIsTypingStarted(true);
+      setIsNeedToResetTImer(false);
+    }
 
     if (event.keyCode == 32 && inputRef.current) {
       // space pressed
@@ -77,19 +88,29 @@ function Game() {
     }
   };
 
+  const finishGame = () => {
+    if (inputRef.current !== null) {
+      inputRef.current.disabled = true;
+    }
+    setIsGameFinished(true);
+  };
+
+  const resetGame = () => {
+    setIsNeedToResetTImer(true);
+    if (inputRef.current !== null) {
+      inputRef.current.disabled = false;
+      inputRef.current.focus();
+      inputRef.current.value = "";
+    }
+    initialProps();
+  };
+
   useEffect(() => {
     const randomWordsList: string[] = getRandomWordsList();
     setWordsRef(randomWordsList);
-    if (inputRef.current !== null) {
-      inputRef.current.focus();
-    }
+    inputRef.current !== null && inputRef.current.focus();
     window.addEventListener("keydown", onKeyDown);
   }, []);
-
-  useEffect(() => {
-    console.log("Updated!");
-    console.log(typingIndex);
-  }, [typingIndex]);
 
   return (
     <Container className="game-section">
@@ -98,12 +119,13 @@ function Game() {
       </ExplainSection>
       <Timer
         isTypingStarted={isTypingStarted}
-        finishGame={() => setIsGameFinished(true)}
+        finishGame={finishGame}
+        isNeedToResetTimer={isNeedToResetTimer}
       />
       <TypingInput ref={inputRef} />
       <WordsContainer>
         {isGameFinished ? (
-          <Results wordsValidation={wordsValidation} />
+          <Results wordsValidation={wordsValidation} resetGame={resetGame} />
         ) : (
           words.map((word: string, index: number) => (
             <WordChip
