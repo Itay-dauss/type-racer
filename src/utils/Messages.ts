@@ -3,6 +3,7 @@ export const WELCOME = "Welcome to Type Racer!";
 export const EXPLAIN =
   "As soon as you start typing the clock will start running";
 export const LOADING = "Loading";
+export const GO = "GO!";
 
 // Intro
 export const INTRO_1 = "How fast are your fingers?";

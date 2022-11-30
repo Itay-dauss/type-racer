@@ -130,7 +130,9 @@ function Game() {
 
   return (
     <Container className="game-section">
-      <ExplainSection>{Messages.EXPLAIN}</ExplainSection>
+      <ExplainSection>
+        {isTypingStarted ? Messages.GO : Messages.EXPLAIN}
+      </ExplainSection>
       <Timer
         isTypingStarted={isTypingStarted}
         finishGame={finishGame}
