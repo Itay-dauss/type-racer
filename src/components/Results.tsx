@@ -13,12 +13,13 @@ import { WordResult } from "../types/WordResult";
 import { WordsValidate } from "../types/WordsValidate";
 import { WordStates } from "../utils/WordStates";
 import IMG from "../assets/star-eyes-emoji.png";
+import * as Messages from "../utils/Messages";
 
 function Results(props: { wordsValidation: WordsValidate; resetGame: any }) {
   const { wordsValidation, resetGame } = props;
 
   const [amountOfWords, setAmountOfWords] = useState<number>(0);
-  const [amountOfMistakes, setAmountOfMistakes] = useState<number>(0);
+  const [amountOfMistakes, setAmountOfMistakes] = useState<number>(-1);
   const [mistakes, setMistakes] = useState<WordResult[]>([]);
 
   useEffect(() => {
@@ -29,28 +30,43 @@ function Results(props: { wordsValidation: WordsValidate; resetGame: any }) {
     );
     setMistakes(wrongTypedWords);
     setAmountOfMistakes(wrongTypedWords.length);
-  }, []);
+  }, [wordsValidation]);
 
   return (
     <Container>
-      <Score>{`Your score is: ${amountOfWords - amountOfMistakes} WPM!`}</Score>
-      {amountOfMistakes === 0 ? (
-        <React.Fragment>
-          <PerfectScore>You type Perfectly!</PerfectScore>
-          <StarsEyesEmoji src={IMG} />
-        </React.Fragment>
+      {amountOfMistakes === -1 ? (
+        <div>{Messages.LOADING}</div>
       ) : (
         <React.Fragment>
-          <ScoreDetails>{`In reality, you typed ${amountOfWords} WPM, but you made ${amountOfMistakes} mistakes, which were not counted in the corrected scores.`}</ScoreDetails>
-          <MistakesContainer>
-            {mistakes.map((wordData) => (
-              <MistakeDetails>{`Instead of "${wordData.original}", you typed "${wordData.typed}".
-`}</MistakeDetails>
-            ))}
-          </MistakesContainer>
+          <Score>{Messages.SCORE(amountOfWords - amountOfMistakes)}</Score>
+          {amountOfMistakes === 0 ? (
+            <React.Fragment>
+              <PerfectScore>{Messages.PERFECT_TYPING}</PerfectScore>
+              <StarsEyesEmoji src={IMG} />
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <ScoreDetails>
+                {Messages.SCORE_DETAILS(amountOfWords, amountOfMistakes)}
+              </ScoreDetails>
+              <MistakesContainer>
+                {mistakes.map((wordData) => (
+                  <MistakeDetails>
+                    {Messages.MISTAKE_DETAILS(
+                      wordData.original,
+                      wordData.typed
+                    )}
+                  </MistakeDetails>
+                ))}
+              </MistakesContainer>
+            </React.Fragment>
+          )}
         </React.Fragment>
       )}
-      <PlayAgainButton onClick={resetGame}>Play Again!</PlayAgainButton>
+
+      <PlayAgainButton onClick={resetGame}>
+        {Messages.PLAY_AGAIN}
+      </PlayAgainButton>
     </Container>
   );
 }

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Container, Seconds } from "../styles/Timer";
+import * as Messages from "../utils/Messages";
 
 function Timer(props: {
   isTypingStarted: boolean;
@@ -39,8 +40,8 @@ function Timer(props: {
         {isActive
           ? seconds
           : isTimeIsUp
-          ? `Time is Up!`
-          : `${seconds} seconds on the clock!`}
+          ? Messages.TIME_IS_UP
+          : Messages.TIME_IS_SET(seconds)}
       </Seconds>
     </Container>
   );

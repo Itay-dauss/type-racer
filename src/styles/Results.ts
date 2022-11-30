@@ -30,6 +30,7 @@ export const MistakesContainer = styled.ul`
   line-height: 1.3;
   max-height: 10vh;
   overflow-y: auto;
+  padding-right: 10px;
 `;
 
 export const MistakeDetails = styled.li`
