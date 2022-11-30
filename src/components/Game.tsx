@@ -19,19 +19,17 @@ function Game() {
   const [words, _setWords] = useState<string[]>([]);
   const [typingIndex, _setTypingIndex] = useState<number>(0);
   const [wordsValidation, _setWordsValidation] = useState<WordsValidate>({});
+
   const inputRef = useRef<HTMLInputElement>(null);
   const typingIndexRef = useRef<number>(typingIndex);
   const wordsRef = useRef<string[]>(words);
   const wordsValidationRef = useRef<WordsValidate>(wordsValidation);
 
-  const initialProps = () => {
-    const randomWordsList: string[] = getRandomWordsList();
-    setWordsRef(randomWordsList);
-    setTypingIndexRef(0);
-    setWordValidationsRef({});
-    setIsTypingStarted(false);
-    setIsGameFinished(false);
-  };
+  useEffect(() => {
+    setNewWordsList();
+    resetInput();
+    window.addEventListener("keydown", onKeyDown);
+  }, []);
 
   const setTypingIndexRef = (index: number) => {
     typingIndexRef.current = index;
@@ -46,6 +44,27 @@ function Game() {
   const setWordValidationsRef = (validation: WordsValidate) => {
     wordsValidationRef.current = validation;
     _setWordsValidation(validation);
+  };
+
+  const initialProps = (): void => {
+    setNewWordsList();
+    setTypingIndexRef(0);
+    setWordValidationsRef({});
+    setIsTypingStarted(false);
+    setIsGameFinished(false);
+  };
+
+  const setNewWordsList = (): void => {
+    const randomWordsList: string[] = getRandomWordsList();
+    setWordsRef(randomWordsList);
+  };
+
+  const resetInput = (): void => {
+    if (inputRef.current !== null) {
+      inputRef.current.disabled = false;
+      inputRef.current.focus();
+      inputRef.current.value = "";
+    }
   };
 
   const validateWord = (inputValue: string) => {
@@ -88,29 +107,18 @@ function Game() {
     }
   };
 
-  const finishGame = () => {
+  const finishGame = (): void => {
     if (inputRef.current !== null) {
       inputRef.current.disabled = true;
     }
     setIsGameFinished(true);
   };
 
-  const resetGame = () => {
+  const resetGame = (): void => {
     setIsNeedToResetTImer(true);
-    if (inputRef.current !== null) {
-      inputRef.current.disabled = false;
-      inputRef.current.focus();
-      inputRef.current.value = "";
-    }
+    resetInput();
     initialProps();
   };
-
-  useEffect(() => {
-    const randomWordsList: string[] = getRandomWordsList();
-    setWordsRef(randomWordsList);
-    inputRef.current !== null && inputRef.current.focus();
-    window.addEventListener("keydown", onKeyDown);
-  }, []);
 
   return (
     <Container className="game-section">

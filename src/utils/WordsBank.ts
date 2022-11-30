@@ -1,4 +1,4 @@
-export const WordsBack = [
+export const WordsBack: string[] = [
   "account",
   "act",
   "addition",
