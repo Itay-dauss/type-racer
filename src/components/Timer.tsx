@@ -9,14 +9,14 @@ function Timer(props: {
 }) {
   const { isTypingStarted, finishGame, isNeedToResetTimer } = props;
 
-  const [seconds, setSeconds] = useState(5);
+  const [seconds, setSeconds] = useState(60);
   const [isActive, setIsActive] = useState(false);
   const [isTimeIsUp, setIsTimeIsUp] = useState(false);
 
   const resetTimer = (): void => {
     setIsTimeIsUp(false);
     setIsActive(false);
-    setSeconds(5);
+    setSeconds(60);
   };
 
   useEffect(() => {
